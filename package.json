@@ -1,0 +1,18 @@
+{
+  "name": "wordbee-webhook-upload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Creative Commons Attribution-ShareAlike 4.0 International License",
+  "dependencies": {
+    "@google-cloud/storage": "^5.1.2"
+  },
+  "devDependencies": {
+    "@google-cloud/functions-framework": "^1.7.1",
+    "eslint": "^7.7.0"
+  }
+}
