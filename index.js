@@ -30,7 +30,7 @@ exports.upload = (req, res) => {
   }
 
   try {
-    logger.log(JSON.parse(req.body));
+    logger.log(req.body);
   } catch {
     logger.error('could not parse req.body', req);
   }
