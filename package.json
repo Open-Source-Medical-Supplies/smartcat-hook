@@ -1,12 +1,9 @@
 {
-  "name": "wordbee-webhook-upload",
-  "repository": "git@github.com:Open-Source-Medical-Supplies/wordbee-webhook-upload.git",
+  "name": "smartcat-hook",
+  "repository": "git@github.com:Open-Source-Medical-Supplies/smartcat-hook.git",
   "version": "1.0.0",
-  "description": "gFunction triggered by Wordbee webhook to update gBucket for Project Library",
+  "description": "gFunction triggered by Zapier/Smartcat webhook to update gBucket for Project Library",
   "main": "index.js",
-  "scripts": {
-    "test": "node -e 'require(\"./test\").test()'"
-  },
   "author": "Josh M Leslie",
   "license": "Creative Commons Attribution-ShareAlike 4.0 International License",
   "dependencies": {
