@@ -8,6 +8,7 @@
   "license": "Creative Commons Attribution-ShareAlike 4.0 International License",
   "dependencies": {
     "@google-cloud/storage": "^5.1.2",
+    "axios": "^0.19.2",
     "firebase-functions": "^3.11.0"
   },
   "devDependencies": {
