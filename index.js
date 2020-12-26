@@ -13,9 +13,7 @@ const bucket = storage.bucket("opensourcemedicalsupplies.org");
 const Axios = require("axios");
 const scURL = "https://smartcat.com/api/integration/v1/";
 const { smartcatID, smartcatAPI } = process.env;
-const base64Auth = Buffer.from(`${smartcatID}:${smartcatAPI}`).toString(
-	"base64"
-);
+const base64Auth = Buffer.from(`${smartcatID}:${smartcatAPI}`).toString("base64");
 const axios = Axios.create({
 	baseURL: scURL,
 	timeout: 5000,
@@ -34,7 +32,7 @@ const axios = Axios.create({
  */
 const checkSecurity = (req, res) => {
 	// 'security' is a randomly generated string of sufficent length
-	// stored at either end of a request to provide a veil of safety.
+	// stored at both ends of a request to provide a veil of safety.
 	const { security } = process.env;
 
 	if (
@@ -112,14 +110,6 @@ exports.upload = async (req, res) => {
 			 * "https://smartcat.com/api/integration/v1/document/export?documentIds=94183338c4fdfd1bb54f1100_10&documentIds=94183338c4fdfd1bb54f1100_10&type=target&stageNumber=1"
 			 */
 
-			// const documentIDs = result.data.documents.map(doc => ({
-			// 	name: doc.name,
-			// 	id: doc.id
-			// }));
-			// axios.post('document/export', null, {
-			// 	documentIds: documentIDs
-			// })
-
 			const { documents } = data;
 			let errors = false;
 			documents.forEach(({ id, name, targetLanguage }, i) => {
@@ -164,7 +154,7 @@ exports.upload = async (req, res) => {
 								targetLanguage.length < 5
 									? getLang(targetLanguage)
 									: targetLanguage;
-							const fileName = targetLang + "_" + name;
+							const fileName = targetLang + "_" + name + '.json';
 							console.log("filename");
 							console.log(fileName);
 							const newFile = bucket.file(fileName);
