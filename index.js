@@ -33,6 +33,8 @@ const axios = Axios.create({
  * @param {!express:Response} res HTTP response context.
  */
 const checkSecurity = (req, res) => {
+	// 'security' is a randomly generated string of sufficent length
+	// stored at either end of a request to provide a veil of safety.
 	const { security } = process.env;
 
 	if (
@@ -99,9 +101,9 @@ exports.upload = async (req, res) => {
 	const projectURL = "project/" + req.body.projectID; // attr named in the Zap
 	await axios.get(projectURL).then(
 		/** @param {AxiosSCProjectResult} result */
-		(result) => {
+		({ data }) => {
 			console.log("axios request");
-			console.log(result.data);
+			console.log(data);
 
 			/**
 			 * Request all documentID tasks (convoluted) => gives 'id' === taskID
@@ -114,57 +116,87 @@ exports.upload = async (req, res) => {
 			// 	name: doc.name,
 			// 	id: doc.id
 			// }));
-
 			// axios.post('document/export', null, {
 			// 	documentIds: documentIDs
 			// })
-			const { documents } = result.data;
 
+			const { documents } = data;
+			let errors = false;
 			documents.forEach(({ id, name, targetLanguage }, i) => {
 				const docPostURL = "document/export";
-				const docParams = { params: {
-					type: "target",
-					stageNumber: 1, // translation stage
-					documentIds: id,
-				}};
+				const docParams = {
+					params: {
+						type: "target",
+						stageNumber: 1, // translation stage
+						documentIds: id,
+					},
+				};
 				// first get the document taskID...
 				axios
 					.post(docPostURL, null, docParams)
 					.then(
-						(result) => {
+						({ data }) => {
 							console.log("SC doc POST");
-							console.log(result);
+							console.log(data);
 							// then get the document
-							const docGetURL = `document/export/${result.id}`;
+							const docGetURL = `document/export/${data.id}`;
 							return axios.get(docGetURL);
 						},
-						(e) => console.log(e)
-					)
-					.then((result) => {
-						console.log("SC doc GET");
-						console.log(result);
-						// then upload the file to the gBucket
-						const targetLang =
-							targetLanguage.length < 5
-								? getLang(targetLanguage)
-								: targetLanguage;
-						const fileName = targetLang + "_" + name;
-						console.log('filename')
-						console.log(fileName)
-						// const newFile = bucket.file(fileName);
-						// newFile.save(JSON.stringify(result), (e) =>
-						// 	e ? console.log(e) : res.write(fileName + " uploaded")
-						// );
-
-						if (i === documents.length) {
-							res.status(200).send();
+						(e) => {
+							console.log(e);
+							return e;
 						}
-					});
+					)
+					.then(
+						({ data }) => {
+							if (typeof data !== "object") {
+								console.error(
+									"file creation error. Data is not an object",
+									data
+								);
+								return;
+							}
+
+							console.log("SC doc GET");
+							console.log(data);
+							// then upload the file to the gBucket
+							const targetLang =
+								targetLanguage.length < 5
+									? getLang(targetLanguage)
+									: targetLanguage;
+							const fileName = targetLang + "_" + name;
+							console.log("filename");
+							console.log(fileName);
+							const newFile = bucket.file(fileName);
+							newFile.save(JSON.stringify(data), (e) =>
+								e ? console.log(e) : res.write(fileName + " uploaded")
+							);
+
+							if (i === documents.length) {
+								res
+									.status(200)
+									.send(
+										"end of upload, " + errors
+											? "errors occurred. see logs"
+											: "no errors."
+									);
+							}
+						},
+						(e) => {
+							errors = true;
+							console.log(e);
+							res.write("error in a file upload. see logs");
+							if (i === documents.length) {
+								res.status(400).send("end of upload, error(s) present. see logs");
+							}
+							return e;
+						}
+					);
 			});
 		},
 		(e) => {
 			console.log(e);
-			res.status(400).send();
+			res.status(400).send("critical error, see logs");
 		}
 	);
 };
