@@ -1,0 +1,35 @@
+/**
+ * Doc Source 
+ * https://smartcat.com/api/methods/#/
+ */
+
+// GET project data
+curl \
+-H "accept: application/json" \
+-H "authorization: Basic BASE64_AUTHORIZATION" \
+"https://smartcat.ai/api/integration/v1/project/caeb14f4-a8b3-46b8-994e-19bcba8d2e9b"
+
+// GET Doc 
+curl \
+	-H "accept: application/json" \
+	-H "authorization: Basic BASE64_AUTHORIZATION" \
+	"https://smartcat.ai/api/integration/v1/document/?documentId=aab9f76f6ea3fdb987bb3774_10"
+
+// POST Document Export (GET doc data, step 1/2)
+curl \
+	-H "accept: application/json" \
+	-H "content-type: application/json" \
+	-d "{type: 'target', stageNumber: 1, documentIds: ['aab9f76f6ea3fdb987bb3774_10']" \
+	-H "authorization: Basic BASE64_AUTHORIZATION" \
+	"https://smartcat.com/api/integration/v1/document/export"
+
+// ERROR -> Error processing request. Correlation id: ce4f9ac6-05fd-4d93-91fb-f28cf08a6687\r\nArray documentIds is empty
+
+// This is the one generated from their API docs and it doesn't even work, useless.
+curl -X POST --header "Accept: application/json" "https://smartcat.com/api/integration/v1/document/export?documentIds=aab9f76f6ea3fdb987bb3774_10&type=target&stageNumber=1"
+
+// GET Document Export (GET doc data, step 2/2)
+curl \
+	-H "accept: application/json" \
+	-H "authorization: Basic BASE64_AUTHORIZATION" \
+	"https://smartcat.ai/api/integration/v1/document/export/6fa9e5d4-72ed-42db-860e-3a82cbdf330f" >> BoM.mqxliff

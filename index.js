@@ -140,10 +140,8 @@ exports.upload = async (req, res) => {
 					.then(
 						({ data }) => {
 							if (typeof data !== "object") {
-								console.error(
-									"file creation error. Data is not an object",
-									data
-								);
+									console.error("file creation error. Data is not an object");
+									console.log(data)
 								return;
 							}
 
